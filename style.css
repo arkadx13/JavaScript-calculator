@@ -93,11 +93,3 @@ body {
 button:active {
   transform: scale(0.97);
 }
-
-/* MEDIA QUERIES */
-
-@media only screen and (max-width: 450px) {
-  .calculator {
-    width: 98%;
-  }
-}
