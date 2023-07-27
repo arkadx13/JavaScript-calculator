@@ -93,15 +93,3 @@ body {
 button:active {
   transform: scale(0.97);
 }
-
-/* to return button colors to original on touch screens */
-.key:visited {
-  background-color: #b8b6b6;
-  color: rgb(8, 8, 8);
-}
-
-.operator:visited,
-.ac:visited {
-  background-color: #fccd5f;
-  color: rgb(8, 8, 8);
-}

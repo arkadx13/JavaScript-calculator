@@ -8,6 +8,7 @@ function App() {
     </div>
   );
 }
+
 function Keypad() {
   return (
     <div className="keypad">
