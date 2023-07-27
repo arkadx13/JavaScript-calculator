@@ -11,28 +11,28 @@ function App() {
 function Keypad() {
   return (
     <div className="keypad">
-      <div className="key ac">AC</div>
-      <div className="key delete">←</div>
-      <div className="key operator">x</div>
+      <button className="key ac">AC</button>
+      <button className="key delete">←</button>
+      <button className="key operator">x</button>
 
-      <div className="key">7</div>
-      <div className="key">8</div>
-      <div className="key">9</div>
-      <div className="key operator">/</div>
+      <button className="key">7</button>
+      <button className="key">8</button>
+      <button className="key">9</button>
+      <button className="key operator">/</button>
 
-      <div className="key">4</div>
-      <div className="key">5</div>
-      <div className="key">6</div>
-      <div className="key operator">-</div>
+      <button className="key">4</button>
+      <button className="key">5</button>
+      <button className="key">6</button>
+      <button className="key operator">-</button>
 
-      <div className="key">1</div>
-      <div className="key">2</div>
-      <div className="key">3</div>
-      <div className="key operator">+</div>
+      <button className="key">1</button>
+      <button className="key">2</button>
+      <button className="key">3</button>
+      <button className="key operator">+</button>
 
-      <div className="key zero">0</div>
-      <div className="key">.</div>
-      <div className="key operator">=</div>
+      <button className="key zero">0</button>
+      <button className="key">.</button>
+      <button className="key operator">=</button>
     </div>
   );
 }
@@ -40,7 +40,7 @@ function Display() {
   return (
     <div className="display">
       <div className="expressions">1x4</div>
-      <div className="answer">4</div>
+      <div className="answer">4444444445678</div>
     </div>
   );
 }
