@@ -76,9 +76,9 @@ function App() {
       if (prev === "0") {
         if (e === "0") return prev;
 
-        if (/[1-9.]/.test(e)) {
+        if (/[0-9.]/.test(e)) {
           if (e === ".") {
-            if (endsWithOperator() || checkLastNumberHasDecimal()) {
+            if (checkLastNumberHasDecimal()) {
               return prev;
             }
             return "0" + e;
@@ -88,17 +88,22 @@ function App() {
       }
 
       //if last input-- operator
-      if (!/[1-9.]/.test(lastInputSymbol)) {
-        if (operators.includes(e)) {
-          return (
-            prev
-              .split("")
-              .slice(0, prev.length - 1)
-              .join("") + e
-          );
-        }
+      if (!/[0-9.]/.test(lastInputSymbol)) {
         //if pressing decimal point after an operator
         if (e === ".") return prev + "0" + e;
+
+        if (operators.includes(e) && operators.includes(lastInputSymbol)) {
+          if (e === "-" && lastInputSymbol === "-") {
+            return prev;
+          } else {
+            return (
+              prev
+                .split("")
+                .slice(0, prev.length - 1)
+                .join("") + e
+            );
+          }
+        }
       }
 
       //if last input-- number
@@ -109,21 +114,7 @@ function App() {
     });
 
     setDisplayAnswer((prev) => {
-      let prevArr = expression.split("");
-      let lastInputSymbol = prevArr[prevArr.length - 1];
-      let operators = ["*", "/", "-", "+"];
-
-      //if number already contain decimal - return number
-      //function to check if string ends with  operator
-
-      function endsWithOperator() {
-        for (const operator of operators) {
-          if (prev.endsWith(operator)) {
-            return true;
-          }
-        }
-        return false;
-      }
+      const operators = ["*", "/", "-", "+"];
       //function to check if last number string has decimal
 
       function checkLastNumberHasDecimal() {
@@ -136,32 +127,37 @@ function App() {
 
       //if first digit is zero
       if (prev === "0") {
-        if (e === "0") return prev;
+        if (e === ".") {
+          return "0" + e;
+        }
+
+        if (e === "." && checkLastNumberHasDecimal) {
+          return prev;
+        }
+
         if (operators.includes(e)) {
           return prev;
         }
 
-        if (/[1-9.]/.test(e)) {
-          if (e === ".") {
-            if (endsWithOperator() || checkLastNumberHasDecimal()) {
-              return prev;
-            }
-            return "0" + e;
-          }
-          return e;
-        }
+        if (e === "0") return prev;
+
+        return e;
       }
 
       //if last input-- operator
-      if (!/[1-9.]/.test(e)) {
+      if (!/[0-9.]/.test(e)) {
         return "0";
       }
 
-      //if last input-- number
-      if (e === "." && (endsWithOperator() || checkLastNumberHasDecimal())) {
-        return prev;
+      if (/^-?\d+(\.\d+)?$/.test(prev)) {
+        if (e === ".") {
+          if (checkLastNumberHasDecimal) {
+            return prev;
+          }
+          return prev + e;
+        }
+        return prev + e;
       }
-      return prev + e;
     });
   };
 
@@ -171,6 +167,9 @@ function App() {
       setExpression(result.toString());
       setDisplayAnswer(result.toString());
     } catch (error) {
+      if (expression === "" && displayAnswer === "0") {
+        return prev;
+      }
       setDisplayAnswer("Error");
     }
   };
