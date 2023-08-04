@@ -1,10 +1,10 @@
 function App() {
-  const [displayAnswer, setAnswer] = React.useState(1234543);
-  const [expression, setExpression] = React.useState("56x3+56");
+  const [displayAnswer, setDisplayAnswer] = React.useState("0");
+  const [expression, setExpression] = React.useState("");
 
   //functions for Keys
   const clear = () => {
-    setAnswer(0);
+    setDisplayAnswer("0");
     setExpression("");
   };
 
@@ -13,24 +13,178 @@ function App() {
       if (prev === "" && prev === null) {
         return;
       }
-      let arrayExp = prev.split("");
-      let lastIndex = arrayExp.length - 1;
-      console.log(arrayExp);
-      console.log(arrayExp.slice(0, lastIndex));
-      let result = arrayExp.slice(0, lastIndex);
-      return result.join("");
+      return prev
+        .split("")
+        .slice(0, prev.length - 1)
+        .join("");
+    });
+
+    setDisplayAnswer((prev) => {
+      if (prev === "" && prev === null) {
+        return;
+      }
+      return prev
+        .split("")
+        .slice(0, prev.length - 1)
+        .join("");
     });
   };
 
   const keyPress = (e) => {
-    setExpression((prev) => prev + e);
+    setExpression((prev) => {
+      let prevArr = prev.split("");
+      let lastInputSymbol = prevArr[prevArr.length - 1];
+      let operators = ["*", "/", "-", "+"];
+
+      //if number already contain decimal - return number
+      //function to check if string ends with  operator
+
+      function endsWithOperator() {
+        for (const operator of operators) {
+          if (prev.endsWith(operator)) {
+            return true;
+          }
+        }
+        return false;
+      }
+      //function to check if last number string has decimal
+
+      function checkLastNumberHasDecimal() {
+        const numbers = prev.split(/[\+\-\*\/]/);
+        const lastNumber = numbers[numbers.length - 1];
+        return lastNumber.includes(".");
+      }
+
+      //--check last input--
+
+      //if empty string
+      if (prev === "") {
+        //if starts with decimal
+        if (e === ".") {
+          if (endsWithOperator() || checkLastNumberHasDecimal()) {
+            return prev;
+          }
+          return prev + "0" + e;
+        }
+        //if starts with operators
+        if (operators.includes(e)) {
+          return prev;
+        }
+      }
+
+      //if first digit is zero
+      if (prev === "0") {
+        if (e === "0") return prev;
+
+        if (/[1-9.]/.test(e)) {
+          if (e === ".") {
+            if (endsWithOperator() || checkLastNumberHasDecimal()) {
+              return prev;
+            }
+            return "0" + e;
+          }
+          return e;
+        }
+      }
+
+      //if last input-- operator
+      if (!/[1-9.]/.test(lastInputSymbol)) {
+        if (operators.includes(e)) {
+          return (
+            prev
+              .split("")
+              .slice(0, prev.length - 1)
+              .join("") + e
+          );
+        }
+        //if pressing decimal point after an operator
+        if (e === ".") return prev + "0" + e;
+      }
+
+      //if last input-- number
+      if (e === "." && (endsWithOperator() || checkLastNumberHasDecimal())) {
+        return prev;
+      }
+      return prev + e;
+    });
+
+    setDisplayAnswer((prev) => {
+      let prevArr = expression.split("");
+      let lastInputSymbol = prevArr[prevArr.length - 1];
+      let operators = ["*", "/", "-", "+"];
+
+      //if number already contain decimal - return number
+      //function to check if string ends with  operator
+
+      function endsWithOperator() {
+        for (const operator of operators) {
+          if (prev.endsWith(operator)) {
+            return true;
+          }
+        }
+        return false;
+      }
+      //function to check if last number string has decimal
+
+      function checkLastNumberHasDecimal() {
+        const numbers = prev.split(/[\+\-\*\/]/);
+        const lastNumber = numbers[numbers.length - 1];
+        return lastNumber.includes(".");
+      }
+
+      //--check last input--
+
+      //if first digit is zero
+      if (prev === "0") {
+        if (e === "0") return prev;
+        if (operators.includes(e)) {
+          return prev;
+        }
+
+        if (/[1-9.]/.test(e)) {
+          if (e === ".") {
+            if (endsWithOperator() || checkLastNumberHasDecimal()) {
+              return prev;
+            }
+            return "0" + e;
+          }
+          return e;
+        }
+      }
+
+      //if last input-- operator
+      if (!/[1-9.]/.test(e)) {
+        return "0";
+      }
+
+      //if last input-- number
+      if (e === "." && (endsWithOperator() || checkLastNumberHasDecimal())) {
+        return prev;
+      }
+      return prev + e;
+    });
+  };
+
+  const calculate = () => {
+    try {
+      const result = new Function("return " + expression)();
+      setExpression(result.toString());
+      setDisplayAnswer(result.toString());
+    } catch (error) {
+      setDisplayAnswer("Error");
+    }
   };
 
   return (
     <div>
       <div className="calculator">
         <Display answer={displayAnswer} expression={expression} />
-        <Keypad ac={clear} deletePrev={deletePrev} keyPress={keyPress} />
+        <Keypad
+          ac={clear}
+          deletePrev={deletePrev}
+          keyPress={keyPress}
+          calculate={calculate}
+        />
       </div>
     </div>
   );
@@ -47,7 +201,7 @@ function Display({ answer, expression }) {
   );
 }
 
-function Keypad({ ac, keyPress, deletePrev }) {
+function Keypad({ ac, keyPress, deletePrev, calculate }) {
   return (
     <div className="keypad">
       <button id="clear" className="key ac" onClick={ac}>
@@ -76,7 +230,7 @@ function Keypad({ ac, keyPress, deletePrev }) {
       <button
         id="divide"
         className="key operator"
-        onClick={() => keyPress("÷")}
+        onClick={() => keyPress("/")}
       >
         ÷
       </button>
@@ -117,7 +271,7 @@ function Keypad({ ac, keyPress, deletePrev }) {
       <button id="decimal" className="key" onClick={() => keyPress(".")}>
         .
       </button>
-      <button id="equals" className="key operator">
+      <button id="equals" className="key operator" onClick={calculate}>
         =
       </button>
     </div>
