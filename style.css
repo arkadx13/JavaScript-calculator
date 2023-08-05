@@ -37,12 +37,14 @@ body {
   padding: 5px 8px;
   color: rgb(226, 224, 224);
   height: 28px;
+  overflow: hidden;
 }
 
 .answer {
   height: 100%;
   padding: 8px;
   font-size: 35px;
+  overflow: hidden;
 }
 
 /* KEYPAD STYLES */
