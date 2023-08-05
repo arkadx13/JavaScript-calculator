@@ -3,40 +3,33 @@ function App() {
   const [expression, setExpression] = React.useState("");
 
   //functions for Keys
-  const clear = () => {
+  const handleClear = () => {
     setDisplayAnswer("0");
     setExpression("");
   };
 
-  const deletePrev = () => {
+  const handleDelete = () => {
     setExpression((prev) => {
       if (prev === "" && prev === null) {
         return;
       }
-      return prev
-        .split("")
-        .slice(0, prev.length - 1)
-        .join("");
+      return prev.slice(0, prev.length - 1);
     });
 
     setDisplayAnswer((prev) => {
       if (prev === "" && prev === null) {
         return;
       }
-      return prev
-        .split("")
-        .slice(0, prev.length - 1)
-        .join("");
+      return prev.slice(0, prev.length - 1);
     });
   };
 
-  const keyPress = (e) => {
+  const handleKeyPress = (e) => {
     setExpression((prev) => {
       let lastInputSymbol = prev[prev.length - 1];
       const operators = ["*", "/", "-", "+"];
 
       //function to check if string ends with  operator
-
       function endsWithOperator() {
         for (const operator of operators) {
           if (prev.endsWith(operator)) {
@@ -45,15 +38,13 @@ function App() {
         }
         return false;
       }
-      //function to check if last number string has decimal
 
+      //function to check if last number string has decimal
       function checkLastNumberHasDecimal() {
         const numbers = prev.split(/[\+\-\*\/]/);
         const lastNumber = numbers[numbers.length - 1];
         return lastNumber.includes(".");
       }
-
-      //--check last input--
 
       //if empty string
       if (prev === "") {
@@ -70,7 +61,7 @@ function App() {
         }
       }
 
-      //if previous display digit is zero - default at reset
+      //if previous display digit is zero (at default/reset)
       if (prev === "0") {
         if (e === "0") return prev;
 
@@ -85,7 +76,7 @@ function App() {
         }
       }
 
-      //if last input-- operator
+      //if last input symbol-- operator
       if (operators.includes(lastInputSymbol)) {
         //if pressing decimal point after an operator
         if (e === ".") return prev + "0" + e;
@@ -119,15 +110,13 @@ function App() {
 
     setDisplayAnswer((prev) => {
       const operators = ["*", "/", "-", "+"];
-      //function to check if last number string has decimal
 
+      //function to check if last number string has decimal
       function checkLastNumberHasDecimal() {
         const numbers = prev.split(/[\+\-\*\/]/);
         const lastNumber = numbers[numbers.length - 1];
         return lastNumber.includes(".");
       }
-
-      //--check last input--
 
       //if first digit is zero or reset state
       if (prev === "0") {
@@ -169,7 +158,7 @@ function App() {
     });
   };
 
-  const calculate = () => {
+  const handleCalculate = () => {
     try {
       const result = new Function("return " + expression)();
       setExpression(result.toString());
@@ -187,10 +176,10 @@ function App() {
       <div className="calculator">
         <Display answer={displayAnswer} expression={expression} />
         <Keypad
-          ac={clear}
-          deletePrev={deletePrev}
-          keyPress={keyPress}
-          calculate={calculate}
+          handleClear={handleClear}
+          handleDelete={handleDelete}
+          handleKeyPress={handleKeyPress}
+          handleCalculate={handleCalculate}
         />
       </div>
     </div>
@@ -208,77 +197,90 @@ function Display({ answer, expression }) {
   );
 }
 
-function Keypad({ ac, keyPress, deletePrev, calculate }) {
+function Keypad({
+  handleClear,
+  handleKeyPress,
+  handleDelete,
+  handleCalculate,
+}) {
   return (
     <div className="keypad">
-      <button id="clear" className="key ac" onClick={ac}>
+      <button id="clear" className="key ac" onClick={handleClear}>
         AC
       </button>
-      <button className="key delete" onClick={deletePrev}>
+      <button className="key delete" onClick={handleDelete}>
         ←
       </button>
       <button
         id="multiply"
         className="key operator"
-        onClick={() => keyPress("*")}
+        onClick={() => handleKeyPress("*")}
       >
         x
       </button>
 
-      <button id="seven" className="key" onClick={() => keyPress("7")}>
+      <button id="seven" className="key" onClick={() => handleKeyPress("7")}>
         7
       </button>
-      <button id="eight" className="key" onClick={() => keyPress("8")}>
+      <button id="eight" className="key" onClick={() => handleKeyPress("8")}>
         8
       </button>
-      <button id="nine" className="key" onClick={() => keyPress("9")}>
+      <button id="nine" className="key" onClick={() => handleKeyPress("9")}>
         9
       </button>
       <button
         id="divide"
         className="key operator"
-        onClick={() => keyPress("/")}
+        onClick={() => handleKeyPress("/")}
       >
         ÷
       </button>
 
-      <button id="four" className="key" onClick={() => keyPress("4")}>
+      <button id="four" className="key" onClick={() => handleKeyPress("4")}>
         4
       </button>
-      <button id="five" className="key" onClick={() => keyPress("5")}>
+      <button id="five" className="key" onClick={() => handleKeyPress("5")}>
         5
       </button>
-      <button id="six" className="key" onClick={() => keyPress("6")}>
+      <button id="six" className="key" onClick={() => handleKeyPress("6")}>
         6
       </button>
       <button
         id="subtract"
         className="key operator"
-        onClick={() => keyPress("-")}
+        onClick={() => handleKeyPress("-")}
       >
         -
       </button>
 
-      <button id="one" className="key" onClick={() => keyPress("1")}>
+      <button id="one" className="key" onClick={() => handleKeyPress("1")}>
         1
       </button>
-      <button id="two" className="key" onClick={() => keyPress("2")}>
+      <button id="two" className="key" onClick={() => handleKeyPress("2")}>
         2
       </button>
-      <button id="three" className="key" onClick={() => keyPress("3")}>
+      <button id="three" className="key" onClick={() => handleKeyPress("3")}>
         3
       </button>
-      <button id="add" className="key operator" onClick={() => keyPress("+")}>
+      <button
+        id="add"
+        className="key operator"
+        onClick={() => handleKeyPress("+")}
+      >
         +
       </button>
 
-      <button id="zero" className="key zero" onClick={() => keyPress("0")}>
+      <button
+        id="zero"
+        className="key zero"
+        onClick={() => handleKeyPress("0")}
+      >
         0
       </button>
-      <button id="decimal" className="key" onClick={() => keyPress(".")}>
+      <button id="decimal" className="key" onClick={() => handleKeyPress(".")}>
         .
       </button>
-      <button id="equals" className="key operator" onClick={calculate}>
+      <button id="equals" className="key operator" onClick={handleCalculate}>
         =
       </button>
     </div>
