@@ -32,11 +32,8 @@ function App() {
 
   const keyPress = (e) => {
     setExpression((prev) => {
-      let prevArr = prev.split("");
-      let last2InputSymbol = prevArr.slice(-2);
-      let lastInputSymbol = prevArr[prevArr.length - 1];
+      let lastInputSymbol = prev[prev.length - 1];
       const operators = ["*", "/", "-", "+"];
-      const nonNegativeOperator = ["*", "/", "+"];
 
       //function to check if string ends with  operator
 
@@ -54,10 +51,6 @@ function App() {
         const numbers = prev.split(/[\+\-\*\/]/);
         const lastNumber = numbers[numbers.length - 1];
         return lastNumber.includes(".");
-      }
-
-      function isAnOperator(x) {
-        nonNegativeOperator.includes(x);
       }
 
       //--check last input--
@@ -93,26 +86,31 @@ function App() {
       }
 
       //if last input-- operator
-      if (!/[0-9.]/.test(lastInputSymbol)) {
+      if (operators.includes(lastInputSymbol)) {
         //if pressing decimal point after an operator
         if (e === ".") return prev + "0" + e;
 
-        if (operators.includes(e) && operators.includes(lastInputSymbol)) {
+        // Remove extra operators if they are entered consecutively (except negative sign)
+        if (operators.includes(e)) {
           if (e === "-" && lastInputSymbol === "-") {
             return prev;
+          } else if (e === "-" && !prev.endsWith("-")) {
+            // Handle negative sign after other operator
+            return prev + e;
+          } else if (
+            prev[prev.length - 2] !== "-" &&
+            lastInputSymbol === "-" &&
+            e !== "-"
+          ) {
+            return prev.slice(0, prev.length - 2) + e;
           } else {
-            return (
-              prev
-                .split("")
-                .slice(0, prev.length - 1)
-                .join("") + e
-            );
+            return prev.slice(0, prev.length - 1) + e;
           }
         }
       }
 
-      //if last input-- number
-      if (e === "." && (endsWithOperator() || checkLastNumberHasDecimal())) {
+      //if last input symbol-- number
+      if (e === "." && checkLastNumberHasDecimal()) {
         return prev;
       }
 
