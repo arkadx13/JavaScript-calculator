@@ -33,10 +33,11 @@ function App() {
   const keyPress = (e) => {
     setExpression((prev) => {
       let prevArr = prev.split("");
+      let last2InputSymbol = prevArr.slice(-2);
       let lastInputSymbol = prevArr[prevArr.length - 1];
-      let operators = ["*", "/", "-", "+"];
+      const operators = ["*", "/", "-", "+"];
+      const nonNegativeOperator = ["*", "/", "+"];
 
-      //if number already contain decimal - return number
       //function to check if string ends with  operator
 
       function endsWithOperator() {
@@ -53,6 +54,10 @@ function App() {
         const numbers = prev.split(/[\+\-\*\/]/);
         const lastNumber = numbers[numbers.length - 1];
         return lastNumber.includes(".");
+      }
+
+      function isAnOperator(x) {
+        nonNegativeOperator.includes(x);
       }
 
       //--check last input--
@@ -72,7 +77,7 @@ function App() {
         }
       }
 
-      //if first digit is zero
+      //if previous display digit is zero - default at reset
       if (prev === "0") {
         if (e === "0") return prev;
 
@@ -110,6 +115,7 @@ function App() {
       if (e === "." && (endsWithOperator() || checkLastNumberHasDecimal())) {
         return prev;
       }
+
       return prev + e;
     });
 
@@ -125,38 +131,42 @@ function App() {
 
       //--check last input--
 
-      //if first digit is zero
+      //if first digit is zero or reset state
       if (prev === "0") {
-        if (e === ".") {
-          return "0" + e;
-        }
-
-        if (e === "." && checkLastNumberHasDecimal) {
-          return prev;
-        }
+        if (e === "0") return prev;
 
         if (operators.includes(e)) {
           return prev;
         }
 
-        if (e === "0") return prev;
+        if (/[1-9.]/.test(e)) {
+          if (e === ".") {
+            if (checkLastNumberHasDecimal()) {
+              return prev;
+            }
+            return "0" + e;
+          }
 
-        return e;
+          return e;
+        }
       }
 
-      //if last input-- operator
+      //when pressing operator
       if (!/[0-9.]/.test(e)) {
         return "0";
       }
 
-      if (/^-?\d+(\.\d+)?$/.test(prev)) {
+      if (/^-?\d+(\.\d*)?$/.test(prev)) {
         if (e === ".") {
-          if (checkLastNumberHasDecimal) {
+          if (checkLastNumberHasDecimal()) {
             return prev;
           }
           return prev + e;
         }
-        return prev + e;
+
+        if (/[0-9]/.test(e)) {
+          return prev + e;
+        }
       }
     });
   };
